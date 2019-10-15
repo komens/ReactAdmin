@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import { Form, Icon, Input, Button, Checkbox } from 'antd';
+import { Form, Icon, Input, Button, message } from 'antd';
+import {reqLogin} from "../../api";
 
 import './login.less';
 import logo from './images/logo.png';
@@ -12,9 +13,20 @@ class Login extends Component {
         event.preventDefault();
 
         const form = this.props.form;
-        form.validateFields((err, values) => {
+        form.validateFields(async (err, values) => {
             if (!err) {
-                console.log('提交登陆的ajax请求', values);
+                const {username,password} = values;
+                const result = await reqLogin(username,password);
+                if (result.status === 0) {
+                    // 登陆成功
+                    message.success('登陆成功');
+                    // 跳转到管理界面
+                    this.props.history.replace('/');
+                } else {
+                    // 登录失败
+                    message.error(result.msg);
+                }
+                // console.log('请求成功', response.data);
             } else {
                 console.log("校验失败");
             }
